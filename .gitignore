@@ -1,0 +1,14 @@
+# Build outputs
+build/
+.gradle/
+.kotlin/
+*.apk
+*.aab
+
+# Local config
+local.properties
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db

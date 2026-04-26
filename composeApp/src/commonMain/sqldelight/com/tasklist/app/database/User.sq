@@ -1,0 +1,15 @@
+CREATE TABLE User (
+    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    username TEXT NOT NULL UNIQUE,
+    passwordHash TEXT NOT NULL,
+    salt TEXT NOT NULL
+);
+
+insertUser:
+INSERT INTO User(username, passwordHash, salt) VALUES (?, ?, ?);
+
+getUserByUsername:
+SELECT * FROM User WHERE username = ?;
+
+getUserById:
+SELECT * FROM User WHERE id = ?;
