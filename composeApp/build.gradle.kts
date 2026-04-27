@@ -31,6 +31,7 @@ kotlin {
             implementation(libs.compose.uiToolingPreview)
             implementation(libs.androidx.activity.compose)
             implementation(libs.sqldelight.android.driver)
+            implementation(libs.kotlinx.datetime)
         }
         commonMain.dependencies {
             implementation(libs.compose.runtime)
