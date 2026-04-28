@@ -1,13 +1,14 @@
 CREATE TABLE Task (
     id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     userId INTEGER NOT NULL,
-    title TEXT NOT NULL,
+    titleEncrypted TEXT NOT NULL,
+    descriptionEncrypted TEXT NOT NULL,
     isDone INTEGER NOT NULL DEFAULT 0,
     createdAt INTEGER NOT NULL
 );
 
 insertTask:
-INSERT INTO Task(userId, title, isDone, createdAt) VALUES (?, ?, 0, ?);
+INSERT INTO Task(userId, titleEncrypted, descriptionEncrypted, isDone, createdAt) VALUES (?, ?, ?, 0, ?);
 
 getTasksByUser:
 SELECT * FROM Task WHERE userId = ? ORDER BY createdAt DESC;
@@ -15,5 +16,11 @@ SELECT * FROM Task WHERE userId = ? ORDER BY createdAt DESC;
 toggleTask:
 UPDATE Task SET isDone = ? WHERE id = ?;
 
+updateTask:
+UPDATE Task SET titleEncrypted = ?, descriptionEncrypted = ? WHERE id = ?;
+
 deleteTask:
 DELETE FROM Task WHERE id = ?;
+
+deleteTasksByUser:
+DELETE FROM Task WHERE userId = ?;

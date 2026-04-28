@@ -1,15 +1,25 @@
 CREATE TABLE User (
     id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-    username TEXT NOT NULL UNIQUE,
+    usernameHash TEXT NOT NULL UNIQUE,
+    usernameEncrypted TEXT NOT NULL,
     passwordHash TEXT NOT NULL,
     salt TEXT NOT NULL
 );
 
 insertUser:
-INSERT INTO User(username, passwordHash, salt) VALUES (?, ?, ?);
+INSERT INTO User(usernameHash, usernameEncrypted, passwordHash, salt) VALUES (?, ?, ?, ?);
 
-getUserByUsername:
-SELECT * FROM User WHERE username = ?;
+getUserByUsernameHash:
+SELECT * FROM User WHERE usernameHash = ?;
 
 getUserById:
 SELECT * FROM User WHERE id = ?;
+
+updateUsernameById:
+UPDATE User SET usernameHash = ?, usernameEncrypted = ? WHERE id = ?;
+
+updatePasswordById:
+UPDATE User SET passwordHash = ?, salt = ? WHERE id = ?;
+
+deleteUserById:
+DELETE FROM User WHERE id = ?;

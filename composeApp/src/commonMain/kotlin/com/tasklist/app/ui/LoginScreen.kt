@@ -12,7 +12,7 @@ import com.tasklist.app.viewmodel.AuthViewModel
 @Composable
 fun LoginScreen(
     authViewModel: AuthViewModel,
-    onLoginSuccess: (Long) -> Unit
+    onLoginSuccess: (Long, ByteArray) -> Unit
 ) {
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -73,15 +73,23 @@ fun LoginScreen(
                 if (isRegistering) {
                     val success = authViewModel.register(username, password)
                     if (success) {
-                        val userId = authViewModel.login(username, password)
-                        if (userId) onLoginSuccess(authViewModel.currentUserId!!)
+                        val loggedIn = authViewModel.login(username, password)
+                        if (loggedIn) {
+                            onLoginSuccess(
+                                authViewModel.currentUserId!!,
+                                authViewModel.currentKey!!
+                            )
+                        }
                     } else {
                         errorMessage = "Username already taken"
                     }
                 } else {
                     val success = authViewModel.login(username, password)
                     if (success) {
-                        onLoginSuccess(authViewModel.currentUserId!!)
+                        onLoginSuccess(
+                            authViewModel.currentUserId!!,
+                            authViewModel.currentKey!!
+                        )
                     } else {
                         errorMessage = "Invalid username or password"
                     }

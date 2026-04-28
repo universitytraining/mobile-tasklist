@@ -9,7 +9,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
-import com.tasklist.app.database.Task
+import com.tasklist.app.database.DecryptedTask
 import com.tasklist.app.viewmodel.TaskViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -20,9 +20,23 @@ fun TaskScreen(
 ) {
     var tasks by remember { mutableStateOf(taskViewModel.getTasks()) }
     var newTaskTitle by remember { mutableStateOf("") }
+    var newTaskDescription by remember { mutableStateOf("") }
+    var editingTask by remember { mutableStateOf<DecryptedTask?>(null) }
 
     fun refresh() {
         tasks = taskViewModel.getTasks()
+    }
+
+    if (editingTask != null) {
+        EditTaskDialog(
+            task = editingTask!!,
+            onConfirm = { title, description ->
+                taskViewModel.updateTask(editingTask!!.id, title, description)
+                editingTask = null
+                refresh()
+            },
+            onDismiss = { editingTask = null }
+        )
     }
 
     Scaffold(
@@ -43,25 +57,36 @@ fun TaskScreen(
                 .padding(padding)
                 .padding(16.dp)
         ) {
-            Row(
+            OutlinedTextField(
+                value = newTaskTitle,
+                onValueChange = { newTaskTitle = it },
+                label = { Text("Task title") },
                 modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                OutlinedTextField(
-                    value = newTaskTitle,
-                    onValueChange = { newTaskTitle = it },
-                    label = { Text("New task") },
-                    modifier = Modifier.weight(1f),
-                    singleLine = true
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Button(onClick = {
-                    taskViewModel.addTask(newTaskTitle)
+                singleLine = true
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            OutlinedTextField(
+                value = newTaskDescription,
+                onValueChange = { newTaskDescription = it },
+                label = { Text("Description (optional)") },
+                modifier = Modifier.fillMaxWidth(),
+                maxLines = 3
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Button(
+                onClick = {
+                    taskViewModel.addTask(newTaskTitle, newTaskDescription)
                     newTaskTitle = ""
+                    newTaskDescription = ""
                     refresh()
-                }) {
-                    Text("Add")
-                }
+                },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Add Task")
             }
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -83,13 +108,14 @@ fun TaskScreen(
                         TaskItem(
                             task = task,
                             onToggle = {
-                                taskViewModel.toggleTask(task.id, task.isDone != 1L)
+                                taskViewModel.toggleTask(task.id, !task.isDone)
                                 refresh()
                             },
                             onDelete = {
                                 taskViewModel.deleteTask(task.id)
                                 refresh()
-                            }
+                            },
+                            onEdit = { editingTask = task }
                         )
                     }
                 }
@@ -100,29 +126,85 @@ fun TaskScreen(
 
 @Composable
 fun TaskItem(
-    task: Task,
+    task: DecryptedTask,
     onToggle: () -> Unit,
-    onDelete: () -> Unit
+    onDelete: () -> Unit,
+    onEdit: () -> Unit
 ) {
     Card(modifier = Modifier.fillMaxWidth()) {
-        Row(
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 8.dp, vertical = 4.dp),
-            verticalAlignment = Alignment.CenterVertically
+                .padding(horizontal = 8.dp, vertical = 4.dp)
         ) {
-            Checkbox(
-                checked = task.isDone == 1L,
-                onCheckedChange = { onToggle() }
-            )
-            Text(
-                text = task.title,
-                modifier = Modifier.weight(1f),
-                textDecoration = if (task.isDone == 1L) TextDecoration.LineThrough else null
-            )
-            TextButton(onClick = onDelete) {
-                Text("Delete")
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Checkbox(
+                    checked = task.isDone,
+                    onCheckedChange = { onToggle() }
+                )
+                Text(
+                    text = task.title,
+                    modifier = Modifier.weight(1f),
+                    textDecoration = if (task.isDone) TextDecoration.LineThrough else null
+                )
+                TextButton(onClick = onEdit) { Text("Edit") }
+                TextButton(onClick = onDelete) { Text("Delete") }
+            }
+            if (task.description.isNotBlank()) {
+                Text(
+                    text = task.description,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(start = 48.dp, bottom = 8.dp)
+                )
             }
         }
     }
+}
+
+@Composable
+fun EditTaskDialog(
+    task: DecryptedTask,
+    onConfirm: (String, String) -> Unit,
+    onDismiss: () -> Unit
+) {
+    var title by remember { mutableStateOf(task.title) }
+    var description by remember { mutableStateOf(task.description) }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Edit Task") },
+        text = {
+            Column {
+                OutlinedTextField(
+                    value = title,
+                    onValueChange = { title = it },
+                    label = { Text("Title") },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                OutlinedTextField(
+                    value = description,
+                    onValueChange = { description = it },
+                    label = { Text("Description") },
+                    modifier = Modifier.fillMaxWidth(),
+                    maxLines = 3
+                )
+            }
+        },
+        confirmButton = {
+            Button(onClick = { onConfirm(title, description) }) {
+                Text("Save")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Cancel")
+            }
+        }
+    )
 }

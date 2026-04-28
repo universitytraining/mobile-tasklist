@@ -1,12 +1,12 @@
 package com.tasklist.app
 
-import androidx.compose.runtime.*
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.*
 import com.tasklist.app.database.Database
-import com.tasklist.app.viewmodel.AuthViewModel
-import com.tasklist.app.viewmodel.TaskViewModel
 import com.tasklist.app.ui.LoginScreen
 import com.tasklist.app.ui.TaskScreen
+import com.tasklist.app.viewmodel.AuthViewModel
+import com.tasklist.app.viewmodel.TaskViewModel
 
 @Composable
 fun App(database: Database) {
@@ -27,8 +27,8 @@ fun App(database: Database) {
         } else {
             LoginScreen(
                 authViewModel = authViewModel,
-                onLoginSuccess = { userId ->
-                    taskViewModel.init(userId)
+                onLoginSuccess = { userId, key ->
+                    taskViewModel.init(userId, key)
                     isLoggedIn = true
                 }
             )
