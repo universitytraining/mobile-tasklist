@@ -19,111 +19,100 @@ fun TaskScreen(
     onLogout: () -> Unit
 ) {
     var tasks by remember { mutableStateOf(taskViewModel.getTasks()) }
-    var newTaskTitle by remember { mutableStateOf("") }
-    var newTaskDescription by remember { mutableStateOf("") }
     var editingTask by remember { mutableStateOf<DecryptedTask?>(null) }
+    var isAddingTask by remember { mutableStateOf(false) }
 
     fun refresh() {
         tasks = taskViewModel.getTasks()
     }
 
-    if (editingTask != null) {
-        EditTaskDialog(
-            task = editingTask!!,
-            onConfirm = { title, description ->
-                taskViewModel.updateTask(editingTask!!.id, title, description)
-                editingTask = null
-                refresh()
-            },
-            onDismiss = { editingTask = null }
-        )
-    }
-
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("My Tasks") },
-                actions = {
-                    TextButton(onClick = onLogout) {
-                        Text("Logout")
+    Box(modifier = Modifier.fillMaxSize()) {
+        Scaffold(
+            topBar = {
+                TopAppBar(
+                    title = { Text("My Tasks") },
+                    actions = {
+                        TextButton(onClick = onLogout) {
+                            Text("Logout")
+                        }
                     }
-                }
-            )
-        }
-    ) { padding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-                .padding(16.dp)
-        ) {
-            OutlinedTextField(
-                value = newTaskTitle,
-                onValueChange = { newTaskTitle = it },
-                label = { Text("Task title") },
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            OutlinedTextField(
-                value = newTaskDescription,
-                onValueChange = { newTaskDescription = it },
-                label = { Text("Description (optional)") },
-                modifier = Modifier.fillMaxWidth(),
-                maxLines = 3
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Button(
-                onClick = {
-                    taskViewModel.addTask(newTaskTitle, newTaskDescription)
-                    newTaskTitle = ""
-                    newTaskDescription = ""
-                    refresh()
-                },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text("Add Task")
+                )
             }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            if (tasks.isEmpty()) {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
+        ) { padding ->
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(padding)
+                    .padding(16.dp)
+            ) {
+                Button(
+                    onClick = { isAddingTask = true },
+                    modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text(
-                        text = "No tasks yet. Add one above!",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
+                    Text("Add Note")
                 }
-            } else {
-                LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    items(tasks, key = { it.id }) { task ->
-                        TaskItem(
-                            task = task,
-                            onToggle = {
-                                taskViewModel.toggleTask(task.id, !task.isDone)
-                                refresh()
-                            },
-                            onDelete = {
-                                taskViewModel.deleteTask(task.id)
-                                refresh()
-                            },
-                            onEdit = { editingTask = task }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                if (tasks.isEmpty()) {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = "No tasks yet. Add one above!",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
+                } else {
+                    LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        items(tasks, key = { it.id }) { task ->
+                            TaskItem(
+                                task = task,
+                                onToggle = {
+                                    taskViewModel.toggleTask(task.id, !task.isDone)
+                                    refresh()
+                                },
+                                onDelete = {
+                                    taskViewModel.deleteTask(task.id)
+                                    refresh()
+                                },
+                                onEdit = { editingTask = task }
+                            )
+                        }
+                    }
                 }
             }
+        }
+
+        if (isAddingTask) {
+            TaskDialog(
+                task = null,
+                onConfirm = { title, description ->
+                    taskViewModel.addTask(title, description)
+                    isAddingTask = false
+                    refresh()
+                },
+                onDismiss = { isAddingTask = false }
+            )
+        }
+
+        if (editingTask != null) {
+            TaskDialog(
+                task = editingTask,
+                onConfirm = { title, description ->
+                    taskViewModel.updateTask(editingTask!!.id, title, description)
+                    editingTask = null
+                    refresh()
+                },
+                onDismiss = { editingTask = null }
+            )
         }
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TaskItem(
     task: DecryptedTask,
@@ -131,7 +120,10 @@ fun TaskItem(
     onDelete: () -> Unit,
     onEdit: () -> Unit
 ) {
-    Card(modifier = Modifier.fillMaxWidth()) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        onClick = onEdit
+    ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -150,7 +142,6 @@ fun TaskItem(
                     modifier = Modifier.weight(1f),
                     textDecoration = if (task.isDone) TextDecoration.LineThrough else null
                 )
-                TextButton(onClick = onEdit) { Text("Edit") }
                 TextButton(onClick = onDelete) { Text("Delete") }
             }
             if (task.description.isNotBlank()) {
@@ -165,46 +156,75 @@ fun TaskItem(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EditTaskDialog(
-    task: DecryptedTask,
+fun TaskDialog(
+    task: DecryptedTask?,
     onConfirm: (String, String) -> Unit,
     onDismiss: () -> Unit
 ) {
-    var title by remember { mutableStateOf(task.title) }
-    var description by remember { mutableStateOf(task.description) }
+    var title by remember { mutableStateOf(task?.title ?: "") }
+    var description by remember { mutableStateOf(task?.description ?: "") }
+    val isEditing = task != null
 
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text("Edit Task") },
-        text = {
-            Column {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+    ) {
+        Surface(
+            modifier = Modifier.fillMaxSize(),
+            shape = MaterialTheme.shapes.large,
+            tonalElevation = 6.dp
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp)
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = if (isEditing) "Edit Task" else "New Task",
+                        style = MaterialTheme.typography.headlineSmall
+                    )
+                    Row {
+                        TextButton(onClick = onDismiss) {
+                            Text("Cancel")
+                        }
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Button(onClick = { onConfirm(title, description) }) {
+                            Text("Save")
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
                 OutlinedTextField(
                     value = title,
                     onValueChange = { title = it },
                     label = { Text("Title") },
                     modifier = Modifier.fillMaxWidth(),
-                    singleLine = true
+                    maxLines = 2,
+                    minLines = 2
                 )
-                Spacer(modifier = Modifier.height(8.dp))
+
+                Spacer(modifier = Modifier.height(12.dp))
+
                 OutlinedTextField(
                     value = description,
                     onValueChange = { description = it },
                     label = { Text("Description") },
-                    modifier = Modifier.fillMaxWidth(),
-                    maxLines = 3
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .fillMaxHeight(0.6f),
+                    maxLines = Int.MAX_VALUE
                 )
             }
-        },
-        confirmButton = {
-            Button(onClick = { onConfirm(title, description) }) {
-                Text("Save")
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text("Cancel")
-            }
         }
-    )
+    }
 }
