@@ -2,6 +2,7 @@ package com.tasklist.app
 
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
+import com.tasklist.app.auth.BiometricAuth
 import com.tasklist.app.database.Database
 import com.tasklist.app.ui.LoginScreen
 import com.tasklist.app.ui.TaskScreen
@@ -9,7 +10,10 @@ import com.tasklist.app.viewmodel.AuthViewModel
 import com.tasklist.app.viewmodel.TaskViewModel
 
 @Composable
-fun App(database: Database) {
+fun App(
+    database: Database,
+    biometricAuth: BiometricAuth
+) {
     val authViewModel = remember { AuthViewModel(database.authRepository) }
     val taskViewModel = remember { TaskViewModel(database.taskRepository) }
 
@@ -21,13 +25,16 @@ fun App(database: Database) {
                 taskViewModel = taskViewModel,
                 onLogout = {
                     authViewModel.logout()
+                    biometricAuth.clearSession()
                     isLoggedIn = false
                 }
             )
         } else {
             LoginScreen(
                 authViewModel = authViewModel,
+                biometricAuth = biometricAuth,
                 onLoginSuccess = { userId, key ->
+                    biometricAuth.storeSession(userId, key)
                     taskViewModel.init(userId, key)
                     isLoggedIn = true
                 }

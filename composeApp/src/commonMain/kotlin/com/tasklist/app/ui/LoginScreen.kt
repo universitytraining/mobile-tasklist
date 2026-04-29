@@ -7,17 +7,28 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
+import com.tasklist.app.auth.BiometricAuth
 import com.tasklist.app.viewmodel.AuthViewModel
+import androidx.compose.runtime.LaunchedEffect
 
 @Composable
 fun LoginScreen(
     authViewModel: AuthViewModel,
+    biometricAuth: BiometricAuth,
     onLoginSuccess: (Long, ByteArray) -> Unit
 ) {
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var errorMessage by remember { mutableStateOf("") }
     var isRegistering by remember { mutableStateOf(false) }
+
+
+    var hasBiometric by remember {
+        mutableStateOf(biometricAuth.isAvailable() && biometricAuth.hasStoredSession())
+    }
+    LaunchedEffect(Unit) {
+        hasBiometric = biometricAuth.isAvailable() && biometricAuth.hasStoredSession()
+    }
 
     Column(
         modifier = Modifier
@@ -107,6 +118,26 @@ fun LoginScreen(
             errorMessage = ""
         }) {
             Text(if (isRegistering) "Already have an account? Login" else "No account? Register")
+        }
+
+        Text(
+            text = "biometric: ${biometricAuth.isAvailable()} session: ${biometricAuth.hasStoredSession()}",
+            style = MaterialTheme.typography.bodySmall
+        )
+        if (hasBiometric && !isRegistering) {
+            Spacer(modifier = Modifier.height(16.dp))
+
+            OutlinedButton(
+                onClick = {
+                    biometricAuth.authenticate(
+                        onSuccess = { userId, key -> onLoginSuccess(userId, key) },
+                        onFailure = { errorMessage = "Biometric authentication failed" }
+                    )
+                },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Use Fingerprint")
+            }
         }
     }
 }
