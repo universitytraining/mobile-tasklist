@@ -120,10 +120,6 @@ fun LoginScreen(
             Text(if (isRegistering) "Already have an account? Login" else "No account? Register")
         }
 
-        Text(
-            text = "biometric: ${biometricAuth.isAvailable()} session: ${biometricAuth.hasStoredSession()}",
-            style = MaterialTheme.typography.bodySmall
-        )
         if (hasBiometric && !isRegistering) {
             Spacer(modifier = Modifier.height(16.dp))
 

@@ -42,6 +42,7 @@ actual class BiometricAuth(
             .putLong("user_id", userId)
             .putString("aes_key", Base64.encodeToString(key, Base64.NO_WRAP))
             .apply()
+        android.util.Log.d("BiometricAuth", "Session stored for userId=$userId")
     }
 
     actual fun clearSession() {

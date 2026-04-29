@@ -49,7 +49,7 @@ fun TaskScreen(
                     onClick = { isAddingTask = true },
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text("Add Note")
+                    Text("Add Task")
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))
