@@ -57,7 +57,7 @@ fun TaskScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(padding)
-                    .padding(16.dp)
+                    .padding(24.dp)
             ) {
                 Button(
                     onClick = { isAddingTask = true },
@@ -244,7 +244,7 @@ fun TaskItem(
                     text = task.description,
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurface,
-                    modifier = Modifier.padding(start = 48.dp, bottom = 8.dp)
+                    modifier = Modifier.padding(start = 12.dp, bottom = 8.dp)
                 )
             }
         }
@@ -266,7 +266,10 @@ fun TaskDialog(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp)
+            .padding(
+                vertical = 48.dp,
+                horizontal = 8.dp
+            )
     ) {
         Surface(
             modifier = Modifier.fillMaxSize(),
