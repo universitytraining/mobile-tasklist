@@ -2,6 +2,7 @@ package com.tasklist.app.viewmodel
 
 import androidx.lifecycle.ViewModel
 import com.tasklist.app.database.AuthRepository
+import com.tasklist.app.database.TaskRepository
 
 class AuthViewModel(private val authRepository: AuthRepository) : ViewModel() {
 
@@ -50,10 +51,16 @@ class AuthViewModel(private val authRepository: AuthRepository) : ViewModel() {
         return result.first
     }
 
-    fun deleteAccount(taskRepository: com.tasklist.app.database.TaskRepository) {
-        val userId = currentUserId ?: return
+    fun deleteAccount(password: String, taskRepository: TaskRepository): Boolean {
+        val userId = currentUserId ?: return false
+        val valid = authRepository.login(
+            authRepository.getDecryptedUsername(userId, currentKey!!) ?: return false,
+            password
+        )
+        if (valid == null) return false
         taskRepository.deleteTasksByUser(userId)
         authRepository.deleteUser(userId)
         logout()
+        return true
     }
 }

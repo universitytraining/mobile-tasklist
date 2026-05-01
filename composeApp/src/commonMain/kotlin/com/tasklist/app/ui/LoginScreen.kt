@@ -1,5 +1,6 @@
 package com.tasklist.app.ui
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -10,7 +11,6 @@ import androidx.compose.ui.unit.dp
 import com.tasklist.app.auth.BiometricAuth
 import com.tasklist.app.viewmodel.AuthViewModel
 import androidx.compose.runtime.LaunchedEffect
-
 @Composable
 fun LoginScreen(
     authViewModel: AuthViewModel,
@@ -33,12 +33,14 @@ fun LoginScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
             .padding(32.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
             text = if (isRegistering) "Register" else "Login",
+            color = MaterialTheme.colorScheme.onPrimaryContainer,
             style = MaterialTheme.typography.headlineMedium
         )
 

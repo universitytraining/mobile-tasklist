@@ -6,6 +6,7 @@ import com.tasklist.app.auth.BiometricAuth
 import com.tasklist.app.database.Database
 import com.tasklist.app.ui.LoginScreen
 import com.tasklist.app.ui.TaskScreen
+import com.tasklist.app.ui.TasklistTheme
 import com.tasklist.app.viewmodel.AuthViewModel
 import com.tasklist.app.viewmodel.TaskViewModel
 
@@ -19,7 +20,7 @@ fun App(
 
     var isLoggedIn by remember { mutableStateOf(false) }
 
-    MaterialTheme {
+    TasklistTheme {
         if (isLoggedIn) {
             TaskScreen(
                 taskViewModel = taskViewModel,
@@ -27,6 +28,17 @@ fun App(
                     authViewModel.logout()
                     biometricAuth.clearSession()
                     isLoggedIn = false
+                },
+                onDeleteAccount = { password ->
+                    val userId = authViewModel.currentUserId!!
+                    val deleted = authViewModel.deleteAccount(
+                        password = password,
+                        taskRepository = database.taskRepository
+                    )
+                    if (deleted) {
+                        biometricAuth.clearSession()
+                        isLoggedIn = false
+                    }
                 }
             )
         } else {
