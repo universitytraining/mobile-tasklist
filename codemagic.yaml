@@ -6,6 +6,9 @@ workflows:
       xcode: latest
       cocoapods: default
     scripts:
+      - name: Fix gradlew permissions
+        script: |
+          chmod +x $CM_BUILD_DIR/gradlew
       - name: Set up KMP
         script: |
           cd $CM_BUILD_DIR

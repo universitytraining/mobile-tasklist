@@ -1,4 +1,5 @@
 # Privacy TaskList
+####  **TaskList** was made as a simple and effective solution to one problem -> A private place to keep notes like your kid's birthday, a driver's license number, a pin code, and whatever else sensitive info. 
 ## Install
 #### Release:
 1. [Download the .zip file](./download_apk_here/TaskList.zip)
@@ -15,7 +16,6 @@
 3. Have fun.
 
 ## Usage and functionality
-####  **TaskList** was made as a simple and effective solution to one problem -> A private place to keep notes like your kid's birthday, a driver's license number, a pin code, and whatever else sensitive info. 
 1. Privacy
     - A password protected account with biometrics capability for open sessions.
     - The app is completely offline - everything is saved on your device - no cloud, no need for internet connection, no one can see your sensitive info but you.
@@ -24,7 +24,7 @@
 2. Usage
     - Creating an account is very straightforward. There aren't any special requirements for username or password.
     - Once logged in, create tasks with the 'Add Task' button. Title field is required.
-    - Tap anywhere on the task card to open the 'Edit dialog'.
+    - Tap anywhere on the task card to open the Edit dialog.
     - 'Delete' button in task card deletes the task. 
     - The checkbox marks tasks as complete.
         - 'Clear Completed' button becomes available once a task is checked as completed. This button will delete *ALL* completed tasks.
