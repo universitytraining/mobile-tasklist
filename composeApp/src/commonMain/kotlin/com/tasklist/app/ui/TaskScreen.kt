@@ -19,7 +19,7 @@ import com.tasklist.app.viewmodel.TaskViewModel
 fun TaskScreen(
     taskViewModel: TaskViewModel,
     onLogout: () -> Unit,
-    onDeleteAccount: (String) -> Unit
+    onDeleteAccount: (String) -> Boolean
 ) {
     var tasks by remember { mutableStateOf(taskViewModel.getTasks()) }
     var editingTask by remember { mutableStateOf<DecryptedTask?>(null) }
@@ -192,8 +192,11 @@ fun TaskScreen(
         if (showDeleteDialog) {
             DeleteAccountDialog(
                 onConfirm = { password ->
-                    onDeleteAccount(password)
-                    showDeleteDialog = false
+                    val success = onDeleteAccount(password)
+                    if (success) {
+                        showDeleteDialog = false
+                    }
+                    success
                 },
                 onDismiss = { showDeleteDialog = false }
             )
@@ -258,6 +261,7 @@ fun TaskDialog(
     var title by remember { mutableStateOf(task?.title ?: "") }
     var description by remember { mutableStateOf(task?.description ?: "") }
     val isEditing = task != null
+    var titleError by remember { mutableStateOf("") }
 
     Box(
         modifier = Modifier
@@ -288,7 +292,13 @@ fun TaskDialog(
                             Text("Cancel")
                         }
                         Spacer(modifier = Modifier.width(8.dp))
-                        Button(onClick = { onConfirm(title, description) }) {
+                        Button(onClick = {
+                            if (title.isBlank()) {
+                                titleError = "Title cannot be empty"
+                                return@Button
+                            }
+                            onConfirm(title, description)
+                        }) {
                             Text("Save")
                         }
                     }
@@ -304,6 +314,14 @@ fun TaskDialog(
                     maxLines = 2,
                     minLines = 2
                 )
+
+                if (titleError.isNotEmpty()) {
+                    Text(
+                        text = titleError,
+                        color = MaterialTheme.colorScheme.error,
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                }
 
                 Spacer(modifier = Modifier.height(12.dp))
 
@@ -324,7 +342,7 @@ fun TaskDialog(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DeleteAccountDialog(
-    onConfirm: (String) -> Unit,
+    onConfirm: (String) -> Boolean,
     onDismiss: () -> Unit
 ) {
     var password by remember { mutableStateOf("") }
@@ -366,7 +384,11 @@ fun DeleteAccountDialog(
                         errorMessage = "Password cannot be empty"
                         return@Button
                     }
-                    onConfirm(password)
+                    val success = onConfirm(password)
+                    if (!success) {
+                        errorMessage = "Incorrect password"
+                        password = ""
+                    }
                 },
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.error

@@ -30,14 +30,14 @@ fun App(
                     isLoggedIn = false
                 },
                 onDeleteAccount = { password ->
-                    val userId = authViewModel.currentUserId!!
-                    val deleted = authViewModel.deleteAccount(
+                    authViewModel.deleteAccount(
                         password = password,
                         taskRepository = database.taskRepository
-                    )
-                    if (deleted) {
-                        biometricAuth.clearSession()
-                        isLoggedIn = false
+                    ).also { success ->
+                        if (success) {
+                            biometricAuth.clearSession()
+                            isLoggedIn = false
+                        }
                     }
                 }
             )
