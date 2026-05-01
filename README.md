@@ -9,7 +9,7 @@
         - \*If it still says you have to give permission to install unknown apps, just follow the steps and allow the app that appears (probably your file browser app) to install unknown apps. *You can, and should turn this back off once the app has successfully installed!*
     - Find the app **'TaskList'** > start it up > make an account > start using!
 
-#### Dev
+#### Dev:
 1. Open [the repo](https://github.com/universitytraining/mobile-tasklist.git) in Android Studio.
 2. Sync Gradle.
 3. Have fun.

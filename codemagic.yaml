@@ -1,0 +1,25 @@
+workflows:
+  ios-build:
+    name: iOS Build
+    max_build_duration: 60
+    environment:
+      xcode: latest
+      cocoapods: default
+    scripts:
+      - name: Set up KMP
+        script: |
+          cd $CM_BUILD_DIR
+          ./gradlew :composeApp:assembleDebug
+      - name: Build iOS
+        script: |
+          cd $CM_BUILD_DIR/iosApp
+          xcodebuild \
+            -project iosApp.xcodeproj \
+            -scheme iosApp \
+            -sdk iphonesimulator \
+            -configuration Debug \
+            -derivedDataPath DerivedData \
+            CODE_SIGNING_ALLOWED=NO
+    artifacts:
+      - composeApp/build/outputs/**/*.apk
+      - iosApp/DerivedData/**/*.app
