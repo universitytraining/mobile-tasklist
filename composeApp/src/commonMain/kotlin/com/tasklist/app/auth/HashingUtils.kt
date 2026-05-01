@@ -17,4 +17,4 @@ fun verifyPassword(input: String, salt: String, storedHash: String): Boolean {
 }
 
 fun ByteArray.toHexString(): String =
-    joinToString("") { "%02x".format(it.toInt() and 0xFF) }
+    joinToString("") { (it.toInt() and 0xFF).toString(16).padStart(2, '0') }

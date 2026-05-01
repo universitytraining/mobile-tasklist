@@ -32,6 +32,5 @@
     - 'Logout' button logs the user out. 
 3. Behavior 
     - App detects mobile device theme and adapts accordingly. There is no manual switching of the app's theme.
-    - If the app is closed, *without logging the user out*, the next time the app opens, the tasks are hidden behind the login screen.
-
-        In such cases, the 'Use Fingerprint' button becomes available for ease of use.
+    - If the app is closed, *without logging the user out*, the next time the app opens, the tasks are hidden behind the login screen. *This doesn't work on iPhone at this moment.*
+        * In such cases, the 'Use Fingerprint' button becomes available for ease of use.
