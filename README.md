@@ -1,35 +1,37 @@
-This is a Kotlin Multiplatform project targeting Android, iOS.
+# Privacy TaskList
+## Install
+#### Release:
+1. [Download the .zip file](./download_apk_here/TaskList.zip)
+2. Extract/Upload the **TaskList.apk** on your phone.
+3. **From your phone:**
+    - You need to have 'Install unknown apps' enabled on your phone.
+    - Navigate to the **TaskList.apk** file from your file browsing app, and tap on it\*. 
+        - \*If it still says you have to give permission to install unknown apps, just follow the steps and allow the app that appears (probably your file browser app) to install unknown apps. *You can, and should turn this back off once the app has successfully installed!*
+    - Find the app **'TaskList'** > start it up > make an account > start using!
 
-* [/composeApp](./composeApp/src) is for code that will be shared across your Compose Multiplatform applications.
-  It contains several subfolders:
-  - [commonMain](./composeApp/src/commonMain/kotlin) is for code that’s common for all targets.
-  - Other folders are for Kotlin code that will be compiled for only the platform indicated in the folder name.
-    For example, if you want to use Apple’s CoreCrypto for the iOS part of your Kotlin app,
-    the [iosMain](./composeApp/src/iosMain/kotlin) folder would be the right place for such calls.
-    Similarly, if you want to edit the Desktop (JVM) specific part, the [jvmMain](./composeApp/src/jvmMain/kotlin)
-    folder is the appropriate location.
+#### Dev
+1. Open [the repo](https://github.com/universitytraining/mobile-tasklist.git) in Android Studio.
+2. Sync Gradle.
+3. Have fun.
 
-* [/iosApp](./iosApp/iosApp) contains iOS applications. Even if you’re sharing your UI with Compose Multiplatform,
-  you need this entry point for your iOS app. This is also where you should add SwiftUI code for your project.
+## Usage and functionality
+####  **TaskList** was made as a simple and effective solution to one problem -> A private place to keep notes like your kid's birthday, a driver's license number, a pin code, and whatever else sensitive info. 
+1. Privacy
+    - A password protected account with biometrics capability for open sessions.
+    - The app is completely offline - everything is saved on your device - no cloud, no need for internet connection, no one can see your sensitive info but you.
+    - The DB is fully encrypted, so even if someone compromises your device and gets their hands on the DB somehow, all they see is gibberish.
 
-### Build and Run Android Application
+2. Usage
+    - Creating an account is very straightforward. There aren't any special requirements for username or password.
+    - Once logged in, create tasks with the 'Add Task' button. Title field is required.
+    - Tap anywhere on the task card to open the 'Edit dialog'.
+    - 'Delete' button in task card deletes the task. 
+    - The checkbox marks tasks as complete.
+        - 'Clear Completed' button becomes available once a task is checked as completed. This button will delete *ALL* completed tasks.
+    - 'Delete Account' button deletes the account and all associated tasks. *This, and any other task deletion process is permanent!*
+    - 'Logout' button logs the user out. 
+3. Behavior 
+    - App detects mobile device theme and adapts accordingly. There is no manual switching of the app's theme.
+    - If the app is closed, *without logging the user out*, the next time the app opens, the tasks are hidden behind the login screen.
 
-To build and run the development version of the Android app, use the run configuration from the run widget
-in your IDE’s toolbar or build it directly from the terminal:
-- on macOS/Linux
-  ```shell
-  ./gradlew :composeApp:assembleDebug
-  ```
-- on Windows
-  ```shell
-  .\gradlew.bat :composeApp:assembleDebug
-  ```
-
-### Build and Run iOS Application
-
-To build and run the development version of the iOS app, use the run configuration from the run widget
-in your IDE’s toolbar or open the [/iosApp](./iosApp) directory in Xcode and run it from there.
-
----
-
-Learn more about [Kotlin Multiplatform](https://www.jetbrains.com/help/kotlin-multiplatform-dev/get-started.html)…
+        In such cases, the 'Use Fingerprint' button becomes available for ease of use.
