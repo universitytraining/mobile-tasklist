@@ -28,29 +28,6 @@ class AuthViewModel(private val authRepository: AuthRepository) : ViewModel() {
         currentKey = null
     }
 
-    fun isLoggedIn(): Boolean = currentUserId != null
-
-    fun getDecryptedUsername(): String? {
-        val userId = currentUserId ?: return null
-        val key = currentKey ?: return null
-        return authRepository.getDecryptedUsername(userId, key)
-    }
-
-    fun updateUsername(newUsername: String): Boolean {
-        val userId = currentUserId ?: return false
-        val key = currentKey ?: return false
-        return authRepository.updateUsername(userId, newUsername, key)
-    }
-
-    fun updatePassword(oldPassword: String, newPassword: String): Boolean {
-        val userId = currentUserId ?: return false
-        val result = authRepository.updatePassword(userId, oldPassword, newPassword)
-        if (result.first && result.second != null) {
-            currentKey = result.second
-        }
-        return result.first
-    }
-
     fun deleteAccount(password: String, taskRepository: TaskRepository): Boolean {
         val userId = currentUserId ?: return false
         val valid = authRepository.login(

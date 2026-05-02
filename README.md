@@ -1,8 +1,7 @@
 # Privacy TaskList
 ####  **TaskList** was made as a simple and effective solution to one problem -> A private place to keep notes like your kid's birthday, a driver's license number, a pin code, and whatever else sensitive info. 
 ## Install
-#### Release:
-1. [Download the .zip file](./download_apk_here/TaskList.zip)
+1. [Download the .zip file](./download_apk_here/android/TaskList.zip)
 2. Extract/Upload the **TaskList.apk** on your phone.
 3. **From your phone:**
     - You need to have 'Install unknown apps' enabled on your phone.

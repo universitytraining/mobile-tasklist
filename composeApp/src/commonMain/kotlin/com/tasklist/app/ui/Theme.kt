@@ -14,15 +14,15 @@ import androidx.compose.ui.graphics.Color
 // ============================================================
 
 private val LightColors = lightColorScheme(
-    primary = Color(0xFF006874),           // <-- main color (teal)
+    primary = Color(0xFF006874),
     onPrimary = Color(0xFFFFFFFF),
     primaryContainer = Color(0xFF97F0FF),
     onPrimaryContainer = Color(0xFF001F24),
-    secondary = Color(0xFF4A6267),         // <-- accent color
+    secondary = Color(0xFF4A6267),
     onSecondary = Color(0xFFFFFFFF),
     secondaryContainer = Color(0xFFCCE7EC),
     onSecondaryContainer = Color(0xFF051F23),
-    tertiary = Color(0xFF525E7D),          // <-- third accent
+    tertiary = Color(0xFF525E7D),
     onTertiary = Color(0xFFFFFFFF),
     tertiaryContainer = Color(0xFFDAE2FF),
     onTertiaryContainer = Color(0xFF0E1B37),
